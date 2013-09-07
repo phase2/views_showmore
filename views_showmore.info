@@ -4,3 +4,5 @@ core = 7.x
 version = 7.x-1.0
 project = views_showmore
 dependencies[] = views
+files[] = views_showmore.views.inc
+files[] = views_plugin_pager_showmore.inc

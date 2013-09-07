@@ -2,12 +2,71 @@
 /**
  * @file views_showmore.module
  *
+ *  A super-simple views pager that just appends content to the bottom of a view
  */
 
 /**
- * Implements hook_views soemthing or other()
+ * Implementation of hook_views_api().
  */
+function views_showmore_views_api() {
+  return array('api' => '3.0-alpha1');
+}
 
-function views_showmore_views_somthing(){
-  drupal_add_js(drupal_get_path('module', 'views_showmore').'/views_showmore.js');
+/**
+ * Implementation of hook_theme().
+ */
+function views_showmore_theme() {
+  return array(
+    'views_showmore_pager' => array(
+      'variables' => array('tags' => array(), 'quantity' => 10, 'element' => 0, 'parameters' => array()),
+      'pattern' => 'views_showmore_pager__',
+    ),
+  );
+}
+
+/**
+ * Default theme function
+ */
+function theme_views_showmore_pager($vars) {
+  global $pager_page_array, $pager_total;
+
+  //print_r($pager_page_array); exit;
+
+  drupal_add_js(drupal_get_path('module', 'views_showmore') . '/views_showmore.js');
+
+  $tags = $vars['tags'];
+  $element = $vars['element'];
+  $parameters = $vars['parameters'];
+
+  $li_next = theme('pager_next',
+    array(
+      'text' => (isset($tags[3]) ? $tags[3] : t($vars['more_button_text'])),
+      'element' => $element,
+      'interval' => 1,
+      'parameters' => $parameters,
+    )
+  );
+
+  if (empty($li_next)) {
+    $li_next = "&nbsp;";
+  }
+
+  if ($pager_total[$element] > 1) {
+    $items[] = array(
+      'class' => array('pager-next'),
+      'data' => $li_next,
+    );
+    return theme('item_list',
+      array(
+        'items' => $items,
+        'title' => NULL,
+        'type' => 'ul',
+        'attributes' => array(
+          'class' => array('pager', 'pager-showmore'),
+          'current' => array($pager_page_array[$element] + 1),
+          'max' => array($pager_total[$element]),
+        ),
+      )
+    );
+  }
 }
