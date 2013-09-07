@@ -1,0 +1,6 @@
+name = Views Show More Pager
+description = A super-simple pager for just creating a "show more" button
+core = 7.x
+version = 7.x-1.0
+project = views_showmore
+dependencies[] = views

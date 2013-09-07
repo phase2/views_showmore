@@ -1,0 +1,13 @@
+<?php
+/**
+ * @file views_showmore.module
+ *
+ */
+
+/**
+ * Implements hook_views soemthing or other()
+ */
+
+function views_showmore_views_somthing(){
+  drupal_add_js(drupal_get_path('module', 'views_showmore').'/views_showmore.js');
+}
