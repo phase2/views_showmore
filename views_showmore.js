@@ -3,7 +3,8 @@
   $(function() {
     $('.view ul.pager-showmore').each(function(){
       var $pagerElement = $(this);
-      var $parentElement = $pagerElement.parents('.view');
+      var $parentElement = $pagerElement.parents('.view:first');
+      var isAttachment = $parentElement.parent().is('.attachment');
 
       var $pagerLink = $('a', $pagerElement);
       var pagerText = $pagerLink.text();
@@ -13,6 +14,11 @@
       $pagerLink = $('<a>').attr('href', '#').text(pagerText).data('nextpage', 1);
 
       $('li', $pagerElement).append($pagerLink);
+
+      // If this is an attachment, assume synced pager, use top level parent
+      if (isAttachment) {
+        $parentElement = $parentElement.parents('.view:first');
+      }
 
       // Get DOM id of view
       var c = $parentElement.attr('class');
@@ -34,15 +40,22 @@
               if (data[i].command == 'insert') {
                 var $d = $(data[i].data);
 
+                // Reposition to attachment content context if isAttachment
+                var adjustContext = "";
+                if (isAttachment) {
+                  adjustContext = '.attachment:first .view ';
+                  $d = $(adjustContext, $d);
+                }
+
                 // Append and animate the elements
                 var $elems = $('.view-content:last', $d).contents();
                 $elems.addClass('newcontent');
-                $('.view-content:last', $parentElement).append($elems);
-                $('.view-content .newcontent', $parentElement).hide().slideDown('slow', function(){
+                $(adjustContext + '.view-content:last', $parentElement).append($elems);
+                $(adjustContext + '.view-content .newcontent', $parentElement).hide().slideDown('slow', function(){
                   $(this).removeClass('newcontent');
                 });
 
-                // Figure out current and max pages
+                // Figure out current and max pages from incoming data pager
                 var $u = $('ul.pager-showmore', $d);
                 var pageCurrent = $u.attr('current');
                 var pageMax = $u.attr('max');
